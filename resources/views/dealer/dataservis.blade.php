@@ -1,14 +1,13 @@
 @extends('dealer.header')
 
-@section('title', 'Delaer - Antrian')
+@section('title', 'Delaer - Data Servis')
 
 @section('main-content')
-
 <div class="p-4 border-1 rounded-lg mt-14 bg-secondary">
     <div class="flex justify-between">
-        <div class="text-purple m-4 font-semibold text-2xl tracking-wide w-1/2">Data Antrian</div>
+        <div class="text-purple m-4 font-semibold text-2xl tracking-wide w-1/2">Data Servis</div>
         <div class="mt-10 mb-4 w-1/2">
-            <form class="flex items-center" action="{{ route('dealer.search') }}" method="GET">
+            <form class="flex items-center" action="{{ route('dealer.search2') }}" method="GET">
                 @csrf   
                 <label for="simple-search" class="sr-only">Search</label>
                 <div class="relative w-full">
@@ -44,6 +43,9 @@
                     Plat Number
                 </th>
                 <th scope="col" class="px-6 py-3">
+                    Biaya
+                </th>
+                <th scope="col" class="px-6 py-3">
                     Status
                 </th>
             </tr>
@@ -59,6 +61,9 @@
                     </td>
                     <td class="px-6 py-4">
                         {{ $service->plat_num }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ $service->price }}
                     </td>
                     <td class="px-6 py-4">
                         {{ $service->status }}
@@ -84,5 +89,4 @@
     </div>
   </div>
 </div>
-    
 @endsection

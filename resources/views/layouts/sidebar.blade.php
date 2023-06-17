@@ -3,7 +3,7 @@
 @section('title', 'Sidebar')
 
 @section('content')
-<nav class="fixed top-0 z-40 w-full bg-gray-200 dark:bg-primary border-b-2 border-purple dark:border-secondary">
+<nav class="fixed top-0 md:z-40 z-30 w-full bg-gray-200 dark:bg-primary border-b-2 border-purple dark:border-secondary">
   <div class="px-3 py-3 lg:px-5 lg:pl-3">
     <div class="flex items-center justify-between">
       <div class="flex items-center justify-start">
@@ -29,7 +29,7 @@
               <img class="w-10 h-10 rounded-full" src="{{ asset('img/logout.png') }}" alt="user photo">
             </button>
           </div>
-          <div class="z-50 hidden my-4 text-base list-none bg-purple divide-y divide-gray-100 rounded" id="dropdown-user">
+          <div class="z-50 hidden my-4 text-base list-none border border-purple bg-purple divide-y divide-gray-100 rounded" id="dropdown-user">
             <div class="px-4 py-3" role="none">
               <p class="text-sm text-primary" role="none">
                 {{ $user->name }}
@@ -38,15 +38,15 @@
                 {{ $user->email }}
               </p>
             </div>
-            <ul class="bg-primary" role="none">
+            <ul class="bg-gray-100 dark:bg-primary" role="none">
               <li>
-                <a href="dashboard" class="block px-4 py-2 text-sm text-purple hover:text-primary hover:bg-dark-purple" role="menuitem">Dashboard</a>
+                <a href="dashboard" class="block px-4 py-2 text-sm text-primary dark:text-purple dark:hover:text-primary hover:bg-dark-purple dark:hover:bg-dark-purple" role="menuitem">Dashboard</a>
               </li>
               <li>
-                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="block px-4 py-2 text-sm text-purple hover:text-primary hover:bg-dark-purple">
+                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="block px-4 py-2 text-sm text-primary dark:text-purple hover:text-primary hover:bg-dark-purple">
                   <button>Logout</button>
                 </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                   @csrf
                 </form>
               </li>
@@ -58,7 +58,7 @@
   </div>
 </nav>
 
-  <aside id="logo-sidebar" class="fixed top-0 left-0 z-30 w-64 h-screen pt-16 transition-transform -translate-x-full bg-primary border-r-2 border-purple dark:border-secondary sm:translate-x-0" aria-label="Sidebar">
+  <aside id="logo-sidebar" class="fixed top-0 left-0 md:z-30 z-40 w-64 h-screen pt-16 transition-transform -translate-x-full bg-gray-100 dark:bg-primary border-r-2 border-purple dark:border-secondary sm:translate-x-0" aria-label="Sidebar">
      <div class="h-full px-3 pb-4 overflow-y-auto bg-gray-100 dark:bg-primary">
         <ul class="space-y-2 font-normal mt-4 md:font-medium text-sm md:text-lg">
            @yield('list-menu')

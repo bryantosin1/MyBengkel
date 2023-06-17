@@ -20,6 +20,8 @@ class CartController extends Controller
         $sparepartIds = $request->input('sparepart_id');
         $quantities = $request->input('quantity');
     
+        $total = 0;
+    
         foreach ($sparepartIds as $index => $sparepartId) {
             $sparepart = Sparepart::find($sparepartId);
             $subtotal = $sparepart->price * $quantities[$index];
@@ -43,17 +45,20 @@ class CartController extends Controller
                 $sparepart->quantity_left -= $quantities[$index];
                 $sparepart->save();
             }
+    
+            $total += $subtotal;
         }
     
-        $lastCart = Cart::latest()->first();
+        $serviceCart = Cart::where('service_id', $serviceId)->get();
+        $serviceCartTotal = $serviceCart->sum('subtotal');
     
-        $lastCart->total += 25000;
+        $lastCart = Cart::latest()->first();
+        $lastCart->total = $serviceCartTotal;
         $lastCart->save();
     
         return redirect()->back()->with('success', 'Sparepart berhasil ditambahkan');
     }
 
-    
     public function removeItem($id)
     {
         $cart = Cart::findOrFail($id);
@@ -86,38 +91,36 @@ class CartController extends Controller
         return redirect()->back()->with('success', 'Cart berhasil dikosongkan.');
     }
 
-    public function updateQuantity(Request $request, $sparepartId)
+    public function updateQuantity(Request $request, $id)
     {
         $quantity = $request->input('quantity');
-
+    
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
-
-        $cart = Cart::find($sparepartId);
-
+    
+        $cart = Cart::find($id);
+    
         if ($cart) {
-            $sparepart = Sparepart::find($sparepartId);
-
+            $sparepart = Sparepart::find($cart->sparepart_id);
+    
             if ($sparepart) {
                 if ($quantity > $sparepart->quantity_left) {
                     return redirect()->back()->with('error', 'Gagal memperbarui quantity. Stok tidak mencukupi.');
                 }
-
+    
                 $quantityDiff = $quantity - $cart->quantity;
-
+    
                 $sparepart->quantity_left -= $quantityDiff;
                 $sparepart->save();
-
+    
                 $cart->quantity = $quantity;
                 $cart->save();
-
+    
                 $subtotal = $sparepart->price * $quantity;
                 $cart->subtotal = $subtotal;
                 $cart->save();
-
-                // echo "<script>console.log($sparepartId)</script>";
-
+    
                 return redirect()->back()->with('success', 'Quantity berhasil diperbarui.');
             } else {
                 return redirect()->back()->with('error', 'Gagal memperbarui quantity. Sparepart tidak ditemukan.');
@@ -126,4 +129,5 @@ class CartController extends Controller
             return redirect()->back()->with('error', 'Gagal memperbarui quantity. Cart tidak ditemukan.');
         }
     }
+
 }

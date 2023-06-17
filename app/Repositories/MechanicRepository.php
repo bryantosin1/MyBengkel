@@ -6,6 +6,7 @@ use App\Repositories\Interfaces\IMechanicRepository;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\Mechanic;
+use App\Models\Sparepart;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +18,7 @@ class MechanicRepository implements IMechanicRepository
         $user = Auth::user();
         $mechanic = $user->mechanic;
         $dealer = $mechanic->dealer;
+        $sparepart = $dealer->sparepart;
 
         if (!$mechanic) {
             return null;
@@ -26,10 +28,10 @@ class MechanicRepository implements IMechanicRepository
         $dealers = $dealer ? $dealer->dealer_name : null;
         $company = $dealer ? $dealer->company : null;
 
-        return compact('user', 'position', 'dealers', 'company');
+        return compact('user', 'position', 'dealers', 'company', 'sparepart');
     }
 
-    public function getDealerServis($user)
+    public function getAllDealerServis($user)
     {   
         $mechanic = $user->mechanic;
 
@@ -43,6 +45,20 @@ class MechanicRepository implements IMechanicRepository
         return compact('user', 'services', 'dealer');
     }
 
+    public function getDataServis()
+    {
+        $user = Auth::user();
+        $mechanic = $user->mechanic;
+        $dealer = $mechanic->dealer;
+
+        if (!$mechanic) {
+            return null;
+        }
+    
+        $services = Service::where('dealer_id', $dealer->id)->paginate(5);
+
+        return compact('user', 'services', 'dealer');
+    }
 
     public function updateProfile($user, $request)
     {
@@ -71,10 +87,24 @@ class MechanicRepository implements IMechanicRepository
         return $user;
     }
 
-    public function updateStatus($id)
+    public function updateStatus1($id)
     {
         $service = Service::findOrFail($id);
-        // $service->status = 'accept';
+        $service->status = 'accept';
+        $service->save();
+    }
+
+    public function updateStatus2($id)
+    {
+        $service = Service::findOrFail($id);
+        $service->status = 'repairing';
+        $service->save();
+    }
+
+    public function updateStatus3($id)
+    {
+        $service = Service::findOrFail($id);
+        $service->status = 'done';
         $service->save();
     }
 
@@ -118,16 +148,11 @@ class MechanicRepository implements IMechanicRepository
             })
             ->orWhere('position', 'LIKE', "%$keyword%");
         
-            $perPage = 5; // Jumlah item per halaman
-            $currentPage = request()->input('page', 1); // Halaman saat ini, default 1
-    
-            // Ambil semua hasil yang cocok dengan query
+            $perPage = 5;
+            $currentPage = request()->input('page', 1);
             $results = $query->get();
-    
-            // Buat objek Collection dari hasil
             $collection = collect($results);
-    
-            // Buat objek LengthAwarePaginator dengan menggunakan Collection
+
             $mechanics = new LengthAwarePaginator(
                 $collection->forPage($currentPage, $perPage),
                 $collection->count(),
